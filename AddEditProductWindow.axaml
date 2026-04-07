@@ -1,0 +1,31 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="ShoesApp.AddEditProductWindow"
+        Title="Редактирование товара" Width="400" Height="500"
+        WindowStartupLocation="CenterOwner" Background="#FFFFFF"
+        FontFamily="Times New Roman">
+
+    <StackPanel Margin="20" Spacing="10">
+        <TextBlock Text="ДАННЫЕ ТОВАРА" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,10"/>
+        
+        <TextBlock Text="Название:"/>
+        <TextBox Name="NameBox" Watermark="Введите название"/>
+
+        <TextBlock Text="Описание:"/>
+        <TextBox Name="DescBox" Watermark="Введите описание" Height="80" TextWrapping="Wrap"/>
+
+        <TextBlock Text="Цена (руб):"/>
+        <TextBox Name="PriceBox" Watermark="0.00"/>
+
+        <TextBlock Text="Скидка (%):"/>
+        <TextBox Name="DiscountBox" Watermark="0"/>
+
+        <TextBlock Text="Количество на складе:"/>
+        <TextBox Name="CountBox" Watermark="0"/>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="20" Margin="0,20,0,0">
+            <Button Content="СОХРАНИТЬ" Click="OnSaveClick" Background="#00FA9A" Width="120" HorizontalContentAlignment="Center" FontWeight="Bold"/>
+            <Button Content="ОТМЕНА" Click="OnCancelClick" Background="#CCCCCC" Width="120" HorizontalContentAlignment="Center"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

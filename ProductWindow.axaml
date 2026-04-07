@@ -1,0 +1,120 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="using:ShoesApp"
+        x:Class="ShoesApp.ProductWindow"
+        Title="ООО Обувь — Просмотр" Width="1000" Height="750"
+        WindowStartupLocation="CenterScreen" Background="#FFFFFF"
+        RequestedThemeVariant="Light"
+        FontFamily="Times New Roman">
+
+    <Window.Styles>
+        <Style Selector="TextBox#SearchBox">
+            <Setter Property="Foreground" Value="Black"/>
+        </Style>
+        <Style Selector="TextBox#SearchBox /template/ TextBlock#PART_Watermark">
+            <Setter Property="Foreground" Value="Gray"/>
+            <Setter Property="Opacity" Value="0.6"/>
+        </Style>
+        <Style Selector="TabItem">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="15,10"/>
+        </Style>
+    </Window.Styles>
+
+    <Grid RowDefinitions="80, *, 40">
+        <Border Grid.Row="0" Background="#7FFF00" Padding="20,0">
+            <Grid ColumnDefinitions="Auto, Auto, *, Auto">
+                <StackPanel Grid.Column="0" x:Name="SearchPanel" Orientation="Horizontal" VerticalAlignment="Center" Spacing="10">
+                    <TextBox x:Name="SearchBox" Width="180" Watermark="Поиск..." 
+                             Background="White" TextChanged="OnSearchChanged"/>
+                    
+                    <ComboBox x:Name="SortComboBox" Width="150" SelectedIndex="0">
+                        <ComboBoxItem>Без сортировки</ComboBoxItem>
+                        <ComboBoxItem>Цена (возр.)</ComboBoxItem>
+                        <ComboBoxItem>Цена (убыв.)</ComboBoxItem>
+                    </ComboBox>
+
+                    <ComboBox x:Name="FilterComboBox" Width="150" SelectedIndex="0">
+                        <ComboBoxItem>Все скидки</ComboBoxItem>
+                        <ComboBoxItem>0% - 10%</ComboBoxItem>
+                        <ComboBoxItem>Более 10%</ComboBoxItem>
+                    </ComboBox>
+                </StackPanel>
+
+                <Button Grid.Column="1" x:Name="AddProductButton" Content="Добавить товар" 
+                        Click="OnAddProductClick" Background="#00FA9A" 
+                        Margin="20,0" VerticalAlignment="Center" FontWeight="Bold"/>
+
+                <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="20" VerticalAlignment="Center">
+                    <TextBlock x:Name="UserFullNameLabel" VerticalAlignment="Center" 
+                               FontWeight="Bold" Foreground="Black"/>
+                    <Button Content="ВЫХОД" Click="OnLogoutClick" 
+                            Background="#00FA9A" Foreground="Black" 
+                            FontWeight="Bold" Padding="15,7"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <TabControl Grid.Row="1" Background="Transparent" BorderThickness="0">
+            <TabItem Header="КАТАЛОГ">
+                <ListBox x:Name="ProductList" Background="#FFFFFF" BorderThickness="0">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="local:Product">
+                            <Border Background="{Binding RowBackground}" BorderBrush="Gray" BorderThickness="1" 
+                                    Margin="10,5" Padding="15" CornerRadius="5">
+                                <Grid ColumnDefinitions="120, *, 200">
+                                    <Border Grid.Column="0" Width="100" Height="100" Background="#F0F0F0" BorderBrush="Gray" BorderThickness="1">
+                                        <TextBlock Text="НЕТ ФОТО" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" Margin="20,0" Spacing="5">
+                                        <TextBlock Text="{Binding Name}" FontSize="18" FontWeight="Bold" Foreground="{Binding MainTextColor}"/>
+                                        <TextBlock Text="{Binding Description}" TextWrapping="Wrap" FontSize="13" Foreground="{Binding MainTextColor}"/>
+                                        <TextBlock Text="{Binding Manufacturer, StringFormat='Производитель: {0}'}" Foreground="{Binding MainTextColor}"/>
+                                        <TextBlock Text="{Binding Cost, StringFormat='Цена: {0} руб.'}" FontSize="15" FontWeight="Bold" Foreground="{Binding MainTextColor}"/>
+                                        
+                                        <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,10,0,0" IsVisible="{Binding IsAdmin}">
+                                            <Button Content="Редактировать" Click="OnEditClick" Background="#00FA9A" FontSize="12"/>
+                                            <Button Content="Удалить" Click="OnDeleteClick" Background="Red" Foreground="White" FontSize="12"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                        <TextBlock Text="{Binding StockStatus}" Foreground="{Binding StatusColor}" FontWeight="Bold" FontSize="14"/>
+                                        <TextBlock Text="{Binding Discount, StringFormat='Скидка: {0}%'}" Foreground="Red" FontSize="24" FontWeight="Black" IsVisible="{Binding HasDiscount}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </TabItem>
+
+            <TabItem Header="ЗАКАЗЫ" x:Name="OrdersTab">
+                <ListBox x:Name="OrderList" Background="#FFFFFF" BorderThickness="0">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="local:Order">
+                            <Border BorderBrush="Gray" BorderThickness="1" Margin="10,5" Padding="15" CornerRadius="5">
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <StackPanel Spacing="5">
+                                        <TextBlock Text="{Binding OrderID, StringFormat='Заказ №{0}'}" FontSize="18" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding OrderDate, StringFormat='Дата заказа: {0:dd.MM.yyyy}'}"/>
+                                        <TextBlock Text="{Binding Status, StringFormat='Статус: {0}'}"/>
+                                        <TextBlock Text="{Binding TotalCost, StringFormat='Код получения: {0}'}" FontWeight="Bold" FontSize="15"/>
+                                    </StackPanel>
+                                    
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="10" IsVisible="{Binding IsAdmin}">
+                                        <Button Content="Удалить заказ" Click="OnDeleteOrderClick" Background="Red" Foreground="White" Width="140" HorizontalContentAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </TabItem>
+        </TabControl>
+
+        <Border Grid.Row="2" Background="#7FFF00">
+            <TextBlock x:Name="StatusLabel" Margin="20,0" VerticalAlignment="Center" FontWeight="Bold" Foreground="Black" Text="Готово"/>
+        </Border>
+    </Grid>
+</Window>
