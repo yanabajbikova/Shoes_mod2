@@ -1,0 +1,829 @@
+--
+-- PostgreSQL database dump
+--
+
+\restrict rxKdO63HlUxxFF2x59h3TVI5eExk2xEusl7GrYbwhNPfVcxmTah6lVvdS9RXiyU
+
+-- Dumped from database version 16.13 (Homebrew)
+-- Dumped by pg_dump version 18.2
+
+-- Started on 2026-04-13 20:22:22 MSK
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 215 (class 1259 OID 16389)
+-- Name: Order; Type: TABLE; Schema: public; Owner: mae
+--
+
+CREATE TABLE public."Order" (
+    id_order integer NOT NULL,
+    order_date date NOT NULL,
+    delivery_date date NOT NULL,
+    id_point integer,
+    id_user integer,
+    receipt_code integer NOT NULL,
+    status character varying(50) NOT NULL
+);
+
+
+ALTER TABLE public."Order" OWNER TO mae;
+
+--
+-- TOC entry 216 (class 1259 OID 16392)
+-- Name: User; Type: TABLE; Schema: public; Owner: mae
+--
+
+CREATE TABLE public."User" (
+    id_user integer NOT NULL,
+    id_role integer,
+    fio character varying(255) NOT NULL,
+    login character varying(255) NOT NULL,
+    password character varying(255) NOT NULL
+);
+
+
+ALTER TABLE public."User" OWNER TO mae;
+
+--
+-- TOC entry 217 (class 1259 OID 16397)
+-- Name: User_id_user_seq; Type: SEQUENCE; Schema: public; Owner: mae
+--
+
+CREATE SEQUENCE public."User_id_user_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public."User_id_user_seq" OWNER TO mae;
+
+--
+-- TOC entry 3809 (class 0 OID 0)
+-- Dependencies: 217
+-- Name: User_id_user_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mae
+--
+
+ALTER SEQUENCE public."User_id_user_seq" OWNED BY public."User".id_user;
+
+
+--
+-- TOC entry 218 (class 1259 OID 16398)
+-- Name: category; Type: TABLE; Schema: public; Owner: mae
+--
+
+CREATE TABLE public.category (
+    id_category integer NOT NULL,
+    category_name character varying(100) NOT NULL
+);
+
+
+ALTER TABLE public.category OWNER TO mae;
+
+--
+-- TOC entry 219 (class 1259 OID 16401)
+-- Name: category_id_category_seq; Type: SEQUENCE; Schema: public; Owner: mae
+--
+
+CREATE SEQUENCE public.category_id_category_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.category_id_category_seq OWNER TO mae;
+
+--
+-- TOC entry 3810 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: category_id_category_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mae
+--
+
+ALTER SEQUENCE public.category_id_category_seq OWNED BY public.category.id_category;
+
+
+--
+-- TOC entry 220 (class 1259 OID 16402)
+-- Name: manufacturer; Type: TABLE; Schema: public; Owner: mae
+--
+
+CREATE TABLE public.manufacturer (
+    id_manufacturer integer NOT NULL,
+    manufacturer_name character varying(100) NOT NULL
+);
+
+
+ALTER TABLE public.manufacturer OWNER TO mae;
+
+--
+-- TOC entry 221 (class 1259 OID 16405)
+-- Name: manufacturer_id_manufacturer_seq; Type: SEQUENCE; Schema: public; Owner: mae
+--
+
+CREATE SEQUENCE public.manufacturer_id_manufacturer_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.manufacturer_id_manufacturer_seq OWNER TO mae;
+
+--
+-- TOC entry 3811 (class 0 OID 0)
+-- Dependencies: 221
+-- Name: manufacturer_id_manufacturer_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mae
+--
+
+ALTER SEQUENCE public.manufacturer_id_manufacturer_seq OWNED BY public.manufacturer.id_manufacturer;
+
+
+--
+-- TOC entry 222 (class 1259 OID 16406)
+-- Name: orderproduct; Type: TABLE; Schema: public; Owner: mae
+--
+
+CREATE TABLE public.orderproduct (
+    id_order integer NOT NULL,
+    article character varying(100) NOT NULL,
+    quantity integer NOT NULL
+);
+
+
+ALTER TABLE public.orderproduct OWNER TO mae;
+
+--
+-- TOC entry 223 (class 1259 OID 16409)
+-- Name: pickuppoint; Type: TABLE; Schema: public; Owner: mae
+--
+
+CREATE TABLE public.pickuppoint (
+    id_point integer NOT NULL,
+    address text NOT NULL
+);
+
+
+ALTER TABLE public.pickuppoint OWNER TO mae;
+
+--
+-- TOC entry 224 (class 1259 OID 16414)
+-- Name: pickuppoint_id_point_seq; Type: SEQUENCE; Schema: public; Owner: mae
+--
+
+CREATE SEQUENCE public.pickuppoint_id_point_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.pickuppoint_id_point_seq OWNER TO mae;
+
+--
+-- TOC entry 3812 (class 0 OID 0)
+-- Dependencies: 224
+-- Name: pickuppoint_id_point_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mae
+--
+
+ALTER SEQUENCE public.pickuppoint_id_point_seq OWNED BY public.pickuppoint.id_point;
+
+
+--
+-- TOC entry 225 (class 1259 OID 16415)
+-- Name: product; Type: TABLE; Schema: public; Owner: mae
+--
+
+CREATE TABLE public.product (
+    article character varying(100) NOT NULL,
+    name character varying(255) NOT NULL,
+    unit character varying(50) NOT NULL,
+    price numeric(10,2) NOT NULL,
+    id_supplier integer,
+    id_manufacturer integer,
+    id_category integer,
+    discount integer DEFAULT 0,
+    stock_quantity integer NOT NULL,
+    description text,
+    photo character varying(255)
+);
+
+
+ALTER TABLE public.product OWNER TO mae;
+
+--
+-- TOC entry 226 (class 1259 OID 16421)
+-- Name: role; Type: TABLE; Schema: public; Owner: mae
+--
+
+CREATE TABLE public.role (
+    id_role integer NOT NULL,
+    role_name character varying(100) NOT NULL
+);
+
+
+ALTER TABLE public.role OWNER TO mae;
+
+--
+-- TOC entry 227 (class 1259 OID 16424)
+-- Name: role_id_role_seq; Type: SEQUENCE; Schema: public; Owner: mae
+--
+
+CREATE SEQUENCE public.role_id_role_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.role_id_role_seq OWNER TO mae;
+
+--
+-- TOC entry 3813 (class 0 OID 0)
+-- Dependencies: 227
+-- Name: role_id_role_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mae
+--
+
+ALTER SEQUENCE public.role_id_role_seq OWNED BY public.role.id_role;
+
+
+--
+-- TOC entry 228 (class 1259 OID 16425)
+-- Name: supplier; Type: TABLE; Schema: public; Owner: mae
+--
+
+CREATE TABLE public.supplier (
+    id_supplier integer NOT NULL,
+    supplier_name character varying(100) NOT NULL
+);
+
+
+ALTER TABLE public.supplier OWNER TO mae;
+
+--
+-- TOC entry 229 (class 1259 OID 16428)
+-- Name: supplier_id_supplier_seq; Type: SEQUENCE; Schema: public; Owner: mae
+--
+
+CREATE SEQUENCE public.supplier_id_supplier_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.supplier_id_supplier_seq OWNER TO mae;
+
+--
+-- TOC entry 3814 (class 0 OID 0)
+-- Dependencies: 229
+-- Name: supplier_id_supplier_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: mae
+--
+
+ALTER SEQUENCE public.supplier_id_supplier_seq OWNED BY public.supplier.id_supplier;
+
+
+--
+-- TOC entry 3603 (class 2604 OID 16429)
+-- Name: User id_user; Type: DEFAULT; Schema: public; Owner: mae
+--
+
+ALTER TABLE ONLY public."User" ALTER COLUMN id_user SET DEFAULT nextval('public."User_id_user_seq"'::regclass);
+
+
+--
+-- TOC entry 3604 (class 2604 OID 16430)
+-- Name: category id_category; Type: DEFAULT; Schema: public; Owner: mae
+--
+
+ALTER TABLE ONLY public.category ALTER COLUMN id_category SET DEFAULT nextval('public.category_id_category_seq'::regclass);
+
+
+--
+-- TOC entry 3605 (class 2604 OID 16431)
+-- Name: manufacturer id_manufacturer; Type: DEFAULT; Schema: public; Owner: mae
+--
+
+ALTER TABLE ONLY public.manufacturer ALTER COLUMN id_manufacturer SET DEFAULT nextval('public.manufacturer_id_manufacturer_seq'::regclass);
+
+
+--
+-- TOC entry 3606 (class 2604 OID 16432)
+-- Name: pickuppoint id_point; Type: DEFAULT; Schema: public; Owner: mae
+--
+
+ALTER TABLE ONLY public.pickuppoint ALTER COLUMN id_point SET DEFAULT nextval('public.pickuppoint_id_point_seq'::regclass);
+
+
+--
+-- TOC entry 3608 (class 2604 OID 16433)
+-- Name: role id_role; Type: DEFAULT; Schema: public; Owner: mae
+--
+
+ALTER TABLE ONLY public.role ALTER COLUMN id_role SET DEFAULT nextval('public.role_id_role_seq'::regclass);
+
+
+--
+-- TOC entry 3609 (class 2604 OID 16434)
+-- Name: supplier id_supplier; Type: DEFAULT; Schema: public; Owner: mae
+--
+
+ALTER TABLE ONLY public.supplier ALTER COLUMN id_supplier SET DEFAULT nextval('public.supplier_id_supplier_seq'::regclass);
+
+
+--
+-- TOC entry 3789 (class 0 OID 16389)
+-- Dependencies: 215
+-- Data for Name: Order; Type: TABLE DATA; Schema: public; Owner: mae
+--
+
+COPY public."Order" (id_order, order_date, delivery_date, id_point, id_user, receipt_code, status) FROM stdin;
+1	2025-02-27	2025-04-20	1	10	901	Завершен
+2	2022-09-28	2025-04-21	11	3	902	Завершен
+3	2025-03-21	2025-04-22	2	2	903	Завершен
+4	2025-02-20	2025-04-23	11	1	904	Завершен
+5	2025-03-17	2025-04-24	2	10	905	Завершен
+6	2025-03-01	2025-04-25	15	3	906	Завершен
+7	2025-02-27	2025-04-26	3	2	907	Завершен
+8	2025-03-31	2025-04-27	19	1	908	Новый 
+9	2025-04-02	2025-04-28	5	10	909	Новый 
+10	2025-04-03	2025-04-29	19	10	910	Новый 
+\.
+
+
+--
+-- TOC entry 3790 (class 0 OID 16392)
+-- Dependencies: 216
+-- Data for Name: User; Type: TABLE DATA; Schema: public; Owner: mae
+--
+
+COPY public."User" (id_user, id_role, fio, login, password) FROM stdin;
+1	1	Одинцов Серафим Артёмович	yzls62@outlook.com	JlFRCZ
+2	1	Сазонов Руслан Германович	uth4iz@mail.com	2L6KZG
+3	1	Никифорова Весения Николаевна	94d5ous@gmail.com	uzWC67
+4	2	Старикова Елена Павловна	4np6se@mail.com	AtnDjr
+5	2	Ворсин Петр Евгеньевич	1qz4kw@mail.com	gynQMT
+6	2	Ситдикова Елена Анатольевна	ptec8ym@yahoo.com	LdNyos
+7	2	Михайлюк Анна Вячеславовна	5d4zbu@tutanota.com	rwVDh9
+8	3	Старикова Елена Павловна	wpmrc3do@tutanota.com	RSbvHv
+9	3	Ворсин Петр Евгеньевич	tjde7c@yahoo.com	YOyhfR
+10	3	Степанов Михаил Артёмович	1diph5e@tutanota.com	8ntwUp
+\.
+
+
+--
+-- TOC entry 3792 (class 0 OID 16398)
+-- Dependencies: 218
+-- Data for Name: category; Type: TABLE DATA; Schema: public; Owner: mae
+--
+
+COPY public.category (id_category, category_name) FROM stdin;
+1	Женская обувь
+2	Мужская обувь
+\.
+
+
+--
+-- TOC entry 3794 (class 0 OID 16402)
+-- Dependencies: 220
+-- Data for Name: manufacturer; Type: TABLE DATA; Schema: public; Owner: mae
+--
+
+COPY public.manufacturer (id_manufacturer, manufacturer_name) FROM stdin;
+1	Рос
+2	Marco Tozzi
+3	Rieker
+4	CROSBY
+5	Alessio Nesca
+6	Kari
+\.
+
+
+--
+-- TOC entry 3796 (class 0 OID 16406)
+-- Dependencies: 222
+-- Data for Name: orderproduct; Type: TABLE DATA; Schema: public; Owner: mae
+--
+
+COPY public.orderproduct (id_order, article, quantity) FROM stdin;
+1	А112Т4	2
+1	F635R4	2
+2	H782T5	1
+2	G783F5	1
+3	J384T6	10
+3	D572U8	10
+4	F572H7	5
+4	D329H3	4
+5	А112Т4	2
+5	F635R4	2
+6	H782T5	1
+6	G783F5	1
+7	J384T6	10
+7	D572U8	10
+8	F572H7	5
+8	D329H3	4
+9	B320R5	5
+9	G432E4	1
+10	S213E3	5
+10	E482R4	5
+\.
+
+
+--
+-- TOC entry 3797 (class 0 OID 16409)
+-- Dependencies: 223
+-- Data for Name: pickuppoint; Type: TABLE DATA; Schema: public; Owner: mae
+--
+
+COPY public.pickuppoint (id_point, address) FROM stdin;
+1	﻿420151, г. Лесной, ул. Вишневая, 32
+2	125061, г. Лесной, ул. Подгорная, 8
+3	630370, г. Лесной, ул. Шоссейная, 24
+4	400562, г. Лесной, ул. Зеленая, 32
+5	614510, г. Лесной, ул. Маяковского, 47
+6	410542, г. Лесной, ул. Светлая, 46
+7	620839, г. Лесной, ул. Цветочная, 8
+8	443890, г. Лесной, ул. Коммунистическая, 1
+9	603379, г. Лесной, ул. Спортивная, 46
+10	603721, г. Лесной, ул. Гоголя, 41
+11	410172, г. Лесной, ул. Северная, 13
+12	614611, г. Лесной, ул. Молодежная, 50
+13	454311, г.Лесной, ул. Новая, 19
+14	660007, г.Лесной, ул. Октябрьская, 19
+15	603036, г. Лесной, ул. Садовая, 4
+16	394060, г.Лесной, ул. Фрунзе, 43
+17	410661, г. Лесной, ул. Школьная, 50
+18	625590, г. Лесной, ул. Коммунистическая, 20
+19	625683, г. Лесной, ул. 8 Марта
+20	450983, г.Лесной, ул. Комсомольская, 26
+21	394782, г. Лесной, ул. Чехова, 3
+22	603002, г. Лесной, ул. Дзержинского, 28
+23	450558, г. Лесной, ул. Набережная, 30
+24	344288, г. Лесной, ул. Чехова, 1
+25	614164, г.Лесной,  ул. Степная, 30
+26	394242, г. Лесной, ул. Коммунистическая, 43
+27	660540, г. Лесной, ул. Солнечная, 25
+28	125837, г. Лесной, ул. Шоссейная, 40
+29	125703, г. Лесной, ул. Партизанская, 49
+30	625283, г. Лесной, ул. Победы, 46
+31	614753, г. Лесной, ул. Полевая, 35
+32	426030, г. Лесной, ул. Маяковского, 44
+33	450375, г. Лесной ул. Клубная, 44
+34	625560, г. Лесной, ул. Некрасова, 12
+35	630201, г. Лесной, ул. Комсомольская, 17
+36	190949, г. Лесной, ул. Мичурина, 26
+\.
+
+
+--
+-- TOC entry 3799 (class 0 OID 16415)
+-- Dependencies: 225
+-- Data for Name: product; Type: TABLE DATA; Schema: public; Owner: mae
+--
+
+COPY public.product (article, name, unit, price, id_supplier, id_manufacturer, id_category, discount, stock_quantity, description, photo) FROM stdin;
+D364R4	Туфли	шт.	12400.00	2	6	1	16	5	Туфли Luiza Belly женские Kate-lazo черные из натуральной замши	\N
+G531F4	Ботинки	шт.	6600.00	2	6	1	12	9	Ботинки женские зимние ROMER арт. 893167-01 Черный	\N
+E482R4	Полуботинки	шт.	1800.00	2	6	1	2	14	Полуботинки kari женские MYZ20S-149, размер 41, цвет: черный	\N
+G432E4	Туфли	шт.	2800.00	2	6	1	3	15	Туфли kari женские TR-YR-413017, размер 37, цвет: черный	10.jpg
+А112Т4	Ботинки	шт.	4990.00	2	6	1	3	6	Женские Ботинки демисезонные kari	1.jpg
+D329H3	Полуботинки	шт.	1890.00	1	5	1	4	4	Полуботинки Alessio Nesca женские 3-30797-47, размер 37, цвет: бордовый	8.jpg
+C436G5	Ботинки	шт.	10200.00	2	5	1	15	9	Ботинки женские, ARGO, размер 40	\N
+T324F5	Сапоги	шт.	4699.00	2	4	1	2	5	Сапоги замша Цвет: синий	\N
+N457T5	Полуботинки	шт.	4600.00	2	4	1	3	13	Полуботинки Ботинки черные зимние, мех	\N
+P764G4	Туфли	шт.	6800.00	2	4	1	15	15	Туфли женские, ARGO, размер 38	\N
+H535R5	Ботинки	шт.	2300.00	1	3	1	2	7	Женские Ботинки демисезонные	\N
+D268G5	Туфли	шт.	4399.00	1	3	1	3	12	Туфли Rieker женские демисезонные, размер 36, цвет коричневый	\N
+F427R5	Ботинки	шт.	11800.00	1	3	1	15	11	Ботинки на молнии с декоративной пряжкой FRAU	\N
+O754F4	Туфли	шт.	5400.00	1	3	1	4	18	Туфли женские демисезонные Rieker артикул 55073-68/37	\N
+B320R5	Туфли	шт.	4300.00	2	3	1	2	6	Туфли Rieker женские демисезонные, размер 41, цвет коричневый	9.jpg
+F635R4	Ботинки	шт.	3244.00	1	2	1	2	13	Ботинки Marco Tozzi женские демисезонные, размер 39, цвет бежевый	2.jpg
+F572H7	Туфли	шт.	2700.00	2	2	1	2	14	Туфли Marco Tozzi женские летние, размер 39, цвет черный	7.jpg
+J542F5	Тапочки	шт.	500.00	2	6	2	13	0	Тапочки мужские Арт.70701-55-67син р.41	\N
+H782T5	Туфли	шт.	4499.00	2	6	2	4	5	Туфли kari мужские классика MYZ21AW-450A, размер 43, цвет: черный	3.jpg
+S326R5	Тапочки	шт.	9900.00	1	4	2	17	15	Мужские кожаные тапочки Профиль С.Дали 	\N
+K345R4	Полуботинки	шт.	2100.00	1	4	2	2	3	407700/01-02 Полуботинки мужские CROSBY	\N
+S634B5	Кеды	шт.	5500.00	1	4	2	3	0	Кеды Caprice мужские демисезонные, размер 42, цвет черный	\N
+S213E3	Полуботинки	шт.	2156.00	1	4	2	3	6	407700/01-01 Полуботинки мужские CROSBY	\N
+M542T5	Кроссовки	шт.	2800.00	1	3	2	18	3	Кроссовки мужские TOFA	\N
+B431R5	Ботинки	шт.	2700.00	1	3	2	2	5	Мужские кожаные ботинки/мужские ботинки	\N
+J384T6	Ботинки	шт.	3800.00	1	3	2	2	16	B3430/14 Полуботинки мужские Rieker	5.jpg
+K358H6	Тапочки	шт.	599.00	2	3	2	20	2	Тапочки мужские син р.41	\N
+D572U8	Кроссовки	шт.	4100.00	1	1	2	3	6	129615-4 Кроссовки мужские	6.jpg
+G783F5	Ботинки	шт.	5900.00	2	1	2	2	8	Мужские ботинки Рос-Обувь кожаные с натуральным мехом	4.jpg
+L754R4	Полуботинки	шт.	1700.00	2	6	1	2	7	Полуботинки kari женские WB2020SS-26, размер 38, цвет: черный	b197f4a4-e2b5-474e-b9e5-b1f6e3d25e48.png
+\.
+
+
+--
+-- TOC entry 3800 (class 0 OID 16421)
+-- Dependencies: 226
+-- Data for Name: role; Type: TABLE DATA; Schema: public; Owner: mae
+--
+
+COPY public.role (id_role, role_name) FROM stdin;
+1	Администратор
+2	Авторизированный клиент
+3	Менеджер
+\.
+
+
+--
+-- TOC entry 3802 (class 0 OID 16425)
+-- Dependencies: 228
+-- Data for Name: supplier; Type: TABLE DATA; Schema: public; Owner: mae
+--
+
+COPY public.supplier (id_supplier, supplier_name) FROM stdin;
+1	Обувь для вас
+2	Kari
+\.
+
+
+--
+-- TOC entry 3815 (class 0 OID 0)
+-- Dependencies: 217
+-- Name: User_id_user_seq; Type: SEQUENCE SET; Schema: public; Owner: mae
+--
+
+SELECT pg_catalog.setval('public."User_id_user_seq"', 10, true);
+
+
+--
+-- TOC entry 3816 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: category_id_category_seq; Type: SEQUENCE SET; Schema: public; Owner: mae
+--
+
+SELECT pg_catalog.setval('public.category_id_category_seq', 2, true);
+
+
+--
+-- TOC entry 3817 (class 0 OID 0)
+-- Dependencies: 221
+-- Name: manufacturer_id_manufacturer_seq; Type: SEQUENCE SET; Schema: public; Owner: mae
+--
+
+SELECT pg_catalog.setval('public.manufacturer_id_manufacturer_seq', 6, true);
+
+
+--
+-- TOC entry 3818 (class 0 OID 0)
+-- Dependencies: 224
+-- Name: pickuppoint_id_point_seq; Type: SEQUENCE SET; Schema: public; Owner: mae
+--
+
+SELECT pg_catalog.setval('public.pickuppoint_id_point_seq', 36, true);
+
+
+--
+-- TOC entry 3819 (class 0 OID 0)
+-- Dependencies: 227
+-- Name: role_id_role_seq; Type: SEQUENCE SET; Schema: public; Owner: mae
+--
+
+SELECT pg_catalog.setval('public.role_id_role_seq', 3, true);
+
+
+--
+-- TOC entry 3820 (class 0 OID 0)
+-- Dependencies: 229
+-- Name: supplier_id_supplier_seq; Type: SEQUENCE SET; Schema: public; Owner: mae
+--
+
+SELECT pg_catalog.setval('public.supplier_id_supplier_seq', 2, true);
+
+
+--
+-- TOC entry 3611 (class 2606 OID 16436)
+-- Name: Order Order_pkey; Type: CONSTRAINT; Schema: public; Owner: mae
+--
+
+ALTER TABLE ONLY public."Order"
+    ADD CONSTRAINT "Order_pkey" PRIMARY KEY (id_order);
+
+
+--
+-- TOC entry 3613 (class 2606 OID 16438)
+-- Name: User User_login_key; Type: CONSTRAINT; Schema: public; Owner: mae
+--
+
+ALTER TABLE ONLY public."User"
+    ADD CONSTRAINT "User_login_key" UNIQUE (login);
+
+
+--
+-- TOC entry 3615 (class 2606 OID 16440)
+-- Name: User User_pkey; Type: CONSTRAINT; Schema: public; Owner: mae
+--
+
+ALTER TABLE ONLY public."User"
+    ADD CONSTRAINT "User_pkey" PRIMARY KEY (id_user);
+
+
+--
+-- TOC entry 3617 (class 2606 OID 16442)
+-- Name: category category_category_name_key; Type: CONSTRAINT; Schema: public; Owner: mae
+--
+
+ALTER TABLE ONLY public.category
+    ADD CONSTRAINT category_category_name_key UNIQUE (category_name);
+
+
+--
+-- TOC entry 3619 (class 2606 OID 16444)
+-- Name: category category_pkey; Type: CONSTRAINT; Schema: public; Owner: mae
+--
+
+ALTER TABLE ONLY public.category
+    ADD CONSTRAINT category_pkey PRIMARY KEY (id_category);
+
+
+--
+-- TOC entry 3621 (class 2606 OID 16446)
+-- Name: manufacturer manufacturer_manufacturer_name_key; Type: CONSTRAINT; Schema: public; Owner: mae
+--
+
+ALTER TABLE ONLY public.manufacturer
+    ADD CONSTRAINT manufacturer_manufacturer_name_key UNIQUE (manufacturer_name);
+
+
+--
+-- TOC entry 3623 (class 2606 OID 16448)
+-- Name: manufacturer manufacturer_pkey; Type: CONSTRAINT; Schema: public; Owner: mae
+--
+
+ALTER TABLE ONLY public.manufacturer
+    ADD CONSTRAINT manufacturer_pkey PRIMARY KEY (id_manufacturer);
+
+
+--
+-- TOC entry 3625 (class 2606 OID 16450)
+-- Name: orderproduct orderproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: mae
+--
+
+ALTER TABLE ONLY public.orderproduct
+    ADD CONSTRAINT orderproduct_pkey PRIMARY KEY (id_order, article);
+
+
+--
+-- TOC entry 3627 (class 2606 OID 16452)
+-- Name: pickuppoint pickuppoint_pkey; Type: CONSTRAINT; Schema: public; Owner: mae
+--
+
+ALTER TABLE ONLY public.pickuppoint
+    ADD CONSTRAINT pickuppoint_pkey PRIMARY KEY (id_point);
+
+
+--
+-- TOC entry 3629 (class 2606 OID 16454)
+-- Name: product product_pkey; Type: CONSTRAINT; Schema: public; Owner: mae
+--
+
+ALTER TABLE ONLY public.product
+    ADD CONSTRAINT product_pkey PRIMARY KEY (article);
+
+
+--
+-- TOC entry 3631 (class 2606 OID 16456)
+-- Name: role role_pkey; Type: CONSTRAINT; Schema: public; Owner: mae
+--
+
+ALTER TABLE ONLY public.role
+    ADD CONSTRAINT role_pkey PRIMARY KEY (id_role);
+
+
+--
+-- TOC entry 3633 (class 2606 OID 16458)
+-- Name: role role_role_name_key; Type: CONSTRAINT; Schema: public; Owner: mae
+--
+
+ALTER TABLE ONLY public.role
+    ADD CONSTRAINT role_role_name_key UNIQUE (role_name);
+
+
+--
+-- TOC entry 3635 (class 2606 OID 16460)
+-- Name: supplier supplier_pkey; Type: CONSTRAINT; Schema: public; Owner: mae
+--
+
+ALTER TABLE ONLY public.supplier
+    ADD CONSTRAINT supplier_pkey PRIMARY KEY (id_supplier);
+
+
+--
+-- TOC entry 3637 (class 2606 OID 16462)
+-- Name: supplier supplier_supplier_name_key; Type: CONSTRAINT; Schema: public; Owner: mae
+--
+
+ALTER TABLE ONLY public.supplier
+    ADD CONSTRAINT supplier_supplier_name_key UNIQUE (supplier_name);
+
+
+--
+-- TOC entry 3638 (class 2606 OID 16463)
+-- Name: Order Order_id_point_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mae
+--
+
+ALTER TABLE ONLY public."Order"
+    ADD CONSTRAINT "Order_id_point_fkey" FOREIGN KEY (id_point) REFERENCES public.pickuppoint(id_point);
+
+
+--
+-- TOC entry 3639 (class 2606 OID 16468)
+-- Name: Order Order_id_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mae
+--
+
+ALTER TABLE ONLY public."Order"
+    ADD CONSTRAINT "Order_id_user_fkey" FOREIGN KEY (id_user) REFERENCES public."User"(id_user);
+
+
+--
+-- TOC entry 3640 (class 2606 OID 16473)
+-- Name: User User_id_role_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mae
+--
+
+ALTER TABLE ONLY public."User"
+    ADD CONSTRAINT "User_id_role_fkey" FOREIGN KEY (id_role) REFERENCES public.role(id_role);
+
+
+--
+-- TOC entry 3641 (class 2606 OID 16478)
+-- Name: orderproduct orderproduct_article_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mae
+--
+
+ALTER TABLE ONLY public.orderproduct
+    ADD CONSTRAINT orderproduct_article_fkey FOREIGN KEY (article) REFERENCES public.product(article);
+
+
+--
+-- TOC entry 3642 (class 2606 OID 16483)
+-- Name: orderproduct orderproduct_id_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mae
+--
+
+ALTER TABLE ONLY public.orderproduct
+    ADD CONSTRAINT orderproduct_id_order_fkey FOREIGN KEY (id_order) REFERENCES public."Order"(id_order);
+
+
+--
+-- TOC entry 3643 (class 2606 OID 16488)
+-- Name: product product_id_category_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mae
+--
+
+ALTER TABLE ONLY public.product
+    ADD CONSTRAINT product_id_category_fkey FOREIGN KEY (id_category) REFERENCES public.category(id_category);
+
+
+--
+-- TOC entry 3644 (class 2606 OID 16493)
+-- Name: product product_id_manufacturer_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mae
+--
+
+ALTER TABLE ONLY public.product
+    ADD CONSTRAINT product_id_manufacturer_fkey FOREIGN KEY (id_manufacturer) REFERENCES public.manufacturer(id_manufacturer);
+
+
+--
+-- TOC entry 3645 (class 2606 OID 16498)
+-- Name: product product_id_supplier_fkey; Type: FK CONSTRAINT; Schema: public; Owner: mae
+--
+
+ALTER TABLE ONLY public.product
+    ADD CONSTRAINT product_id_supplier_fkey FOREIGN KEY (id_supplier) REFERENCES public.supplier(id_supplier);
+
+
+-- Completed on 2026-04-13 20:22:23 MSK
+
+--
+-- PostgreSQL database dump complete
+--
+
+\unrestrict rxKdO63HlUxxFF2x59h3TVI5eExk2xEusl7GrYbwhNPfVcxmTah6lVvdS9RXiyU
+
